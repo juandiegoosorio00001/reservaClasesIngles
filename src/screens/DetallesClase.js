@@ -15,12 +15,14 @@ import useResponsive from "../hooks/useResponsive";
 import { colors, radius, spacing, typography, sombra } from "../theme";
 import { formatearPrecio } from "../data/clases";
 import EtiquetaNivel from "../components/EtiquetaNivel";
+import useReserva from "../hooks/useReserva";
 
 export default function DetallesClase({ route, navigation }) {
   const insets = useSafeAreaInsets();
   const claseParam = route?.params?.clase;
   const onReservarExitoso = route?.params?.onReservarExitoso;
   const { paddingHorizontal, esTablet } = useResponsive();
+  const { agregarReserva } = useReserva();
 
   // Estado local de la clase para actualizar los cupos en tiempo real en esta vista
   const [claseDetalle, setClaseDetalle] = useState(claseParam);
@@ -44,6 +46,13 @@ export default function DetallesClase({ route, navigation }) {
         "Sin cupos",
         "Lo sentimos, esta clase ya no tiene cupos disponibles.",
       );
+      return;
+    }
+
+    const resultado = agregarReserva(claseDetalle, horarioSeleccionado);
+
+    if (!resultado.ok) {
+      Alert.alert("Reserva existente", "Ya tienes reservada esta clase en ese horario.");
       return;
     }
 
